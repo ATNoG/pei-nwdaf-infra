@@ -1,2 +1,3 @@
-# pei-nwdaf-template
-A template for PEI nwadaf components
+# pei-nwdaf-infra
+
+Start middleware and databases

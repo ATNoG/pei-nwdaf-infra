@@ -6,6 +6,13 @@ pipeline {
             steps {
                 echo 'Copying shared .env configuration...'
                 sh 'cp /opt/nwdaf-config/.env .env'
+
+                echo 'Verifying .env file exists and content...'
+                sh 'ls -la .env'
+                sh 'cat .env'
+
+                echo 'Testing variable substitution...'
+                sh 'echo "KAFKA_PORT from env: ${KAFKA_PORT}"'
             }
         }
 
@@ -13,6 +20,10 @@ pipeline {
             steps {
                 echo 'Switching to deploy context...'
                 sh 'docker context use deploy'
+
+                echo 'Validating docker-compose configuration...'
+                sh 'docker compose config > /tmp/compose-debug.yml || true'
+                sh 'cat /tmp/compose-debug.yml || true'
 
                 echo 'Stopping existing services...'
                 sh 'docker compose down --remove-orphans'
