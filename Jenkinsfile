@@ -32,9 +32,7 @@ pipeline {
 
     post {
         always {
-            echo 'Cleaning up .env file...'
             sh 'rm -f .env'
-            echo 'Ensuring default context is active...'
             sh 'docker context use default || true'
         }
         success {
