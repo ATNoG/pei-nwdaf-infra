@@ -28,12 +28,6 @@ services:
       - nwdaf-network
     restart: unless-stopped
 
-volumes:
-  influxdb_data:
-  influxdb_config:
-  clickhouse_data:
-  clickhouse_logs:
-
 networks:
   nwdaf-network:
     external: true
