@@ -1,42 +1,4 @@
 services:
-
-  #---- Databases
-  influxdb:
-    image: influxdb:2.7-alpine
-    container_name: influxdb
-    ports:
-      - "${INFLUX_PORT}:${INFLUX_PORT}"
-    environment:
-      - DOCKER_INFLUXDB_INIT_MODE=setup
-      - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUX_ADMIN_USER}
-      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUX_ADMIN_PASSWORD}
-      - DOCKER_INFLUXDB_INIT_ORG=${INFLUX_ORG}
-      - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUX_BUCKET}
-      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUX_TOKEN}
-    volumes:
-      - influxdb_data:/var/lib/influxdb2
-      - influxdb_config:/etc/influxdb2
-    networks:
-      - nwdaf-network
-    restart: unless-stopped
-
-  clickhouse:
-    image: clickhouse/clickhouse-server:latest
-    container_name: clickhouse
-    ports:
-      - "${CLICKHOUSE_HTTP_PORT}:${CLICKHOUSE_HTTP_PORT}"
-      - "${CLICKHOUSE_TCP_PORT}:${CLICKHOUSE_TCP_PORT}"
-    environment:
-      - CLICKHOUSE_DB=${CLICKHOUSE_DB}
-      - CLICKHOUSE_USER=${CLICKHOUSE_USER}
-      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
-    volumes:
-      - clickhouse_data:/var/lib/clickhouse
-      - clickhouse_logs:/var/log/clickhouse-server
-    networks:
-      - nwdaf-network
-    restart: unless-stopped
-
   #---- Middleware
   kafka:
     image: apache/kafka:4.1.1
