@@ -28,7 +28,7 @@ pipeline {
 
         stage('Restart services'){
             steps {
-                sh 'sleep 15'
+                sh 'sleep 45'
                 sh 'docker restart $(docker ps -aq) || true'
                 sh 'docker context use default'
             }
