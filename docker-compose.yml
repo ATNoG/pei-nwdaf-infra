@@ -18,16 +18,58 @@ services:
       - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
       - KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=0
       - KAFKA_NUM_PARTITIONS=${KAFKA_NUM_PARTITIONS}
-      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
+      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=false
     healthcheck:
       test: ["CMD-SHELL", "nc -z localhost ${KAFKA_PORT} || exit 1"]
-      interval: 5s
+      interval: 10s
       timeout: 10s
-      retries: 5
-      start_period: 10s
+      retries: 20
+      start_period: 15s
     networks:
       - nwdaf-network
     restart: unless-stopped
+
+  kafka-init-topics:
+    image: confluentinc/cp-kafka:7.7.1
+    depends_on:
+      kafka:
+        condition: service_healthy
+    command: |
+      bash -c '
+        echo "Waiting for Kafka broker to be ready..."
+        until kafka-topics --bootstrap-server kafka:${KAFKA_PORT:-9092} --list >/dev/null 2>&1; do
+          echo "   still waiting..."
+          sleep 3
+        done
+
+        echo "Creating topics (idempotent)..."
+
+        kafka-topics --bootstrap-server kafka:${KAFKA_PORT:-9092} \
+          --create --if-not-exists \
+          --topic raw-data \
+          --partitions 6 \
+          --replication-factor 1 \
+          --config retention.ms=604800000 \
+          --config cleanup.policy=delete
+
+        kafka-topics --bootstrap-server kafka:${KAFKA_PORT:-9092} \
+          --create --if-not-exists \
+          --topic processed-data \
+          --partitions 3 \
+          --replication-factor 1
+
+        kafka-topics --bootstrap-server kafka:${KAFKA_PORT:-9092} \
+          --create --if-not-exists \
+          --topic stored-data \
+          --partitions 1 \
+          --replication-factor 1 \
+          --config cleanup.policy=compact \
+          --config segment.bytes=1073741824
+
+        echo "All topics created successfully!"
+      '
+    networks:
+      - nwdaf-network
 
 networks:
   nwdaf-network:

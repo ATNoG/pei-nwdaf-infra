@@ -15,9 +15,6 @@ pipeline {
                 sh 'docker compose down --remove-orphans || true'
                 sh 'docker compose --env-file .env build --no-cache'
                 sh 'docker compose --env-file .env up -d'
-                sh 'sleep 15'
-                sh 'docker restart $(docker ps -aq) || true'
-                sh 'docker context use default'
             }
         }
 
@@ -29,14 +26,14 @@ pipeline {
             }
         }
 
-        stage('Create kafka topics'){
+        stage('Restart services'){
             steps {
-                sh 'docker context use deploy'
-                sh './topic.sh kafka "raw-data" -c'
-                sh './topic.sh kafka "processed-data" -c'
+                sh 'sleep 15'
+                sh 'docker restart $(docker ps -aq) || true'
                 sh 'docker context use default'
             }
         }
+
     }
 
     post {
