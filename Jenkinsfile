@@ -28,6 +28,15 @@ pipeline {
                 sh 'docker context use default'
             }
         }
+
+        stage('Create kafka topics'){
+            steps {
+                sh 'docker context use deploy'
+                sh './topic.sh kafka "raw-data" -c'
+                sh './topic.sh kafka "processed-data" -c'
+                sh 'docker context use default'
+            }
+        }
     }
 
     post {
