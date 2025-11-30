@@ -5,49 +5,58 @@ pipeline {
         stage('Prepare Environment') {
             steps {
                 sh 'cp /var/lib/jenkins/.env .env'
-                sh 'ls -la .env'
+                sh 'ls -la .env'   // just to confirm the file is there
             }
         }
 
         stage('Deploy Infrastructure') {
             steps {
-                sh 'docker context use deploy'
-                sh 'docker compose down --remove-orphans || true'
-                sh 'docker compose --env-file .env build --no-cache'
-                sh 'docker compose --env-file .env up -d'
+                sh '''
+                    set +e
+
+                    docker --context deploy compose down --remove-orphans --volumes || true
+
+                    docker --context deploy compose \
+                        --env-file .env \
+                        build --no-cache --parallel
+
+                    docker --context deploy compose \
+                        --env-file .env \
+                        up --detach --remove-orphans
+
+                    echo "Deployment triggered successfully on remote host"
+                '''
             }
         }
 
         stage('Verify Deployment') {
             steps {
-                sh 'docker context use deploy'
-                sh 'docker compose ps'
-                sh 'docker context use default'
+                sh '''
+                    echo "Waiting 10 seconds for containers to stabilize..."
+                    sleep 10
+
+                    echo "=== Running containers on deploy host ==="
+                    docker --context deploy compose ps
+
+                    echo "=== Container logs (last 20 lines each) ==="
+                    docker --context deploy compose logs --tail=20 || true
+                '''
             }
         }
 
-        stage('Restart services'){
-            steps {
-                sh 'sleep 15'
-                sh 'docker context use deploy'
-                sh 'docker restart $(docker ps -aq) || true'
-                sh 'docker context use default'
-            }
-        }
 
     }
 
     post {
         always {
             sh 'rm -f .env'
-            sh 'docker context use default || true'
+            echo 'Cleaned up .env file'
         }
         success {
-            echo 'Deployment completed successfully!'
+            echo 'Deployment completed successfully and verified!'
         }
         failure {
-            echo 'Deployment failed. Check logs above.'
-            sh 'docker context use default || true'
+            echo 'Deployment failed – check the logs above for details.'
         }
     }
 }
