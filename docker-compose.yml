@@ -46,7 +46,7 @@ services:
 
         kafka-topics --bootstrap-server kafka:${KAFKA_PORT:-9092} \
           --create --if-not-exists \
-          --topic raw-data \
+          --topic network.data.ingested \
           --partitions 6 \
           --replication-factor 1 \
           --config retention.ms=604800000 \
@@ -54,17 +54,9 @@ services:
 
         kafka-topics --bootstrap-server kafka:${KAFKA_PORT:-9092} \
           --create --if-not-exists \
-          --topic processed-data \
+          --topic network.data.processed \
           --partitions 3 \
           --replication-factor 1
-
-        kafka-topics --bootstrap-server kafka:${KAFKA_PORT:-9092} \
-          --create --if-not-exists \
-          --topic stored-data \
-          --partitions 1 \
-          --replication-factor 1 \
-          --config cleanup.policy=compact \
-          --config segment.bytes=1073741824
 
         echo "All topics created successfully!"
       '
