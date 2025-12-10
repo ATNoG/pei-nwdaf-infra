@@ -58,6 +58,12 @@ services:
           --partitions 3 \
           --replication-factor 1
 
+        kafka-topics --bootstrap-server kafka:${KAFKA_PORT:-9092} \
+          --create --if-not-exists \
+          --topic ml.inference.request \
+          --partitions 3 \
+          --replication-factor 1
+
         echo "All topics created successfully!"
       '
     networks:
