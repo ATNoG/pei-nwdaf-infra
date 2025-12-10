@@ -24,6 +24,9 @@ pipeline {
                         --env-file .env \
                         up --detach --remove-orphans
 
+                    echo "Restarting other containers not managed by docker-compose..."
+                    docker --context deploy ps -q --filter "label!=com.docker.compose.project" | xargs -r docker --context deploy restart
+
                     echo "Deployment triggered successfully on remote host"
                 '''
             }
