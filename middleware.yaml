@@ -30,41 +30,11 @@ services:
     restart: unless-stopped
 
   kafka-init-topics:
-    image: confluentinc/cp-kafka:7.7.1
+    build: ./kafka
     depends_on:
       kafka:
         condition: service_healthy
-    command: |
-      bash -c '
-        echo "Waiting for Kafka broker to be ready..."
-        until kafka-topics --bootstrap-server kafka:${KAFKA_PORT:-9092} --list >/dev/null 2>&1; do
-          echo "   still waiting..."
-          sleep 3
-        done
-
-        echo "Creating topics (idempotent)..."
-
-        kafka-topics --bootstrap-server kafka:${KAFKA_PORT:-9092} \
-          --create --if-not-exists \
-          --topic network.data.ingested \
-          --partitions 6 \
-          --replication-factor 1 \
-          --config retention.ms=604800000 \
-          --config cleanup.policy=delete
-
-        kafka-topics --bootstrap-server kafka:${KAFKA_PORT:-9092} \
-          --create --if-not-exists \
-          --topic network.data.processed \
-          --partitions 3 \
-          --replication-factor 1
-
-        kafka-topics --bootstrap-server kafka:${KAFKA_PORT:-9092} \
-          --create --if-not-exists \
-          --topic ml.inference.request \
-          --partitions 3 \
-          --replication-factor 1
-
-        echo "All topics created successfully!"
-      '
+    environment:
+      - KAFKA_BOOTSTRAP_SERVER=kafka:${KAFKA_PORT:-9092}
     networks:
       - nwdaf-network
