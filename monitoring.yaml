@@ -15,7 +15,7 @@ services:
   #    - nwdaf-network
 
   alloy:
-    image: grafana/alloy:${GRAFANA_ALLOY_VERSION:-v1.13.2}
+    build: ./alloy
     privileged: true
     ports:
       - 12345:12345
@@ -24,7 +24,6 @@ services:
     environment:
       ALLOY_DEPLOY_MODE: docker
     volumes:
-      - /home/ubuntu/config.alloy:/etc/alloy/config.alloy
       - /proc:/rootproc:ro
       - /var/run/docker.sock:/var/run/docker.sock
       - /sys:/sys:ro
@@ -40,11 +39,9 @@ services:
       - nwdaf-network
 
   loki:
-    image: grafana/loki:${GRAFANA_LOKI_VERSION:-3.6.7}
+    build: ./loki
     ports:
       - "3100:3100"
-    volumes:
-     - /home/ubuntu/loki-config.yaml:/etc/loki/local-config.yaml
     command: -config.file=/etc/loki/local-config.yaml
     networks:
       - nwdaf-network
