@@ -54,8 +54,13 @@ pipeline {
             echo 'Cleaned up .env file'
         }
         success {
-            echo "Restarting other containers not managed by docker-compose..."
-            docker --context deploy ps -q --filter "label!=com.docker.compose.project" | xargs -r docker --context deploy restart
+            sh '''
+                echo "Restarting other containers not managed by docker-compose..."
+                COMPOSE_IDS=$(docker --context deploy ps -q --filter "label=com.docker.compose.project")
+                ALL_IDS=$(docker --context deploy ps -q)
+                RESTART_IDS=$(echo "$ALL_IDS" | grep -vxF "$COMPOSE_IDS" || true)
+                echo "$RESTART_IDS" | xargs -r docker --context deploy restart
+            '''
             echo 'Deployment completed successfully and verified!'
         }
         failure {
