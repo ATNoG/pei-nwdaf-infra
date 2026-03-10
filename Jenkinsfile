@@ -56,10 +56,9 @@ pipeline {
         success {
             sh '''
                 echo "Restarting other containers not managed by docker-compose..."
-                COMPOSE_IDS=$(docker --context deploy ps -q --filter "label=com.docker.compose.project")
-                ALL_IDS=$(docker --context deploy ps -q)
-                RESTART_IDS=$(echo "$ALL_IDS" | grep -vxF "$COMPOSE_IDS" || true)
-                echo "$RESTART_IDS" | xargs -r docker --context deploy restart
+                docker --context deploy ps -q --filter "label=com.docker.compose.project" > /tmp/compose_ids.txt
+                docker --context deploy ps -q | grep -vxFf /tmp/compose_ids.txt | xargs -r docker --context deploy restart
+                rm -f /tmp/compose_ids.txt
             '''
             echo 'Deployment completed successfully and verified!'
         }
