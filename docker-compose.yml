@@ -4,4 +4,4 @@ include:
 
 networks:
   nwdaf-network:
-    external: true
+    name: nwdaf-network
