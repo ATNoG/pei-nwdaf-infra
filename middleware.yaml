@@ -35,6 +35,6 @@ services:
       kafka:
         condition: service_healthy
     environment:
-      - KAFKA_BOOTSTRAP_SERVER=kafka:${KAFKA_PORT:-9092}
+      - KAFKA_BOOTSTRAP_SERVER=${KAFKA_HOST}:${KAFKA_PORT:-9092}
     networks:
       - nwdaf-network
