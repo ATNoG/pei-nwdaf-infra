@@ -25,6 +25,7 @@ services:
       ALLOY_DEPLOY_MODE: docker
       PROMETHEUS_URL: ${PROMETHEUS_URL:-http://prometheus:9090/api/v1/write}
       LOKI_URL: ${LOKI_URL:-http://loki:3100/loki/api/v1/push}
+      ML_SERVICE_URL: ${ML_SERVICE_URL:-}
     volumes:
       - /proc:/rootproc:ro
       - /var/run/docker.sock:/var/run/docker.sock
@@ -59,7 +60,10 @@ services:
       - nwdaf-network
 
   grafana:
-   image: grafana/grafana:${GRAFANA_VERSION:-12.4.0}
+   build:
+     context: ./grafana
+     args:
+       GRAFANA_VERSION: ${GRAFANA_VERSION:-12.4.0}
    environment:
      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
      - GF_AUTH_ANONYMOUS_ENABLED=true
@@ -84,6 +88,7 @@ services:
           version: 1
           editable: false
         - name: Prometheus
+          uid: prometheus
           type: prometheus
           orgId: 1
           url: http://prometheus:9090
