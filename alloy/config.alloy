@@ -30,6 +30,15 @@ prometheus.scrape "scraper" {
   scrape_interval = "10s"
 }
 
+// Scrape ML service training resource metrics.
+// Set ML_SERVICE_URL (host:port) only on the VM running the ML service.
+// On other VMs leave it empty — the scrape will fail silently without affecting Alloy.
+prometheus.scrape "ml_service" {
+  targets         = [{"__address__" = env("ML_SERVICE_URL"), "__metrics_path__" = "/v1/resources/metrics"}]
+  forward_to      = [prometheus.remote_write.demo.receiver]
+  scrape_interval = "15s"
+}
+
 // Configure a prometheus.remote_write component to send metrics to a Prometheus server.
 prometheus.remote_write "demo" {
   endpoint {
