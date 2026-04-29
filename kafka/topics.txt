@@ -1,4 +1,4 @@
-network.data.ingested
-network.data.processed
-network.ml.results
-network.decisions
+network.data.ingested 86400000
+network.data.processed 86400000
+network.ml.results 86400000
+network.decisions 86400000
