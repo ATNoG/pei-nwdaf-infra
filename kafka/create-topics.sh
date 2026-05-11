@@ -17,7 +17,7 @@ while IFS=' ' read -r topic retention_ms; do
     --create --if-not-exists \
     --topic "$topic" \
     --partitions 3 \
-    --replication-factor 1 \
+    --replication-factor 3 \
     --config retention.ms="${retention_ms}"
 done < /topics.txt
 
