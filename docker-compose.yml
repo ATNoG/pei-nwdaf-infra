@@ -1,6 +1,7 @@
 include:
    - monitoring.yaml
    - middleware.yaml
+   - keycloak.yaml
 
 networks:
   nwdaf-network:
