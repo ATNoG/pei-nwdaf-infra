@@ -36,6 +36,17 @@
         "*"
       ],
       "protocol": "openid-connect"
+    },
+    {
+      "clientId": "aion-services",
+      "name": "AION Services",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "protocol": "openid-connect"
     }
   ],
   "users": [
@@ -65,6 +76,15 @@
       "lastName": "Engineer",
       "credentials": [{ "type": "password", "value": "network_engineer", "temporary": false }],
       "realmRoles": ["network_engineer"]
+    },
+    {
+      "username": "ml-service",
+      "enabled": true,
+      "email": "ml-service@aion.local",
+      "firstName": "ML",
+      "lastName": "Service",
+      "credentials": [{ "type": "password", "value": "ml-service", "temporary": false }],
+      "realmRoles": ["ml_engineer"]
     },
     {
       "username": "debug_admin",
