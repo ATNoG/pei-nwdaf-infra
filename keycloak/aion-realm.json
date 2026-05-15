@@ -2,6 +2,8 @@
   "realm": "aion",
   "enabled": true,
   "displayName": "AION",
+  "accessTokenLifespan": 3600,
+  "requiredActions": [],
   "registrationAllowed": false,
   "loginWithEmailAllowed": true,
   "duplicateEmailsAllowed": false,
@@ -24,7 +26,7 @@
       "publicClient": true,
       "standardFlowEnabled": true,
       "implicitFlowEnabled": false,
-      "directAccessGrantsEnabled": false,
+      "directAccessGrantsEnabled": true,
       "serviceAccountsEnabled": false,
       "attributes": {
         "pkce.code.challenge.method": "S256"
